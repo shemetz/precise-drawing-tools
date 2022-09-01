@@ -1,0 +1,40 @@
+{
+  "id": "precise-drawing-tools",
+  "title": "Precise Drawing Tools",
+  "description": "Improves the freehand drawing tools to enable more detailed artwork.",
+  "version": "0.0.1",
+  "compatibility": {
+    "minimum": "9",
+    "verified": "10"
+  },
+  "esmodules": [
+    "scripts/precise-drawing-tools.js"
+  ],
+  "url": "https://github.com/shemetz/precise-drawing-tools",
+  "manifest": "https://github.com/shemetz/precise-drawing-tools/raw/master/module.json",
+  "download": "https://github.com/shemetz/precise-drawing-tools/archive/master.zip",
+  "readme": "https://github.com/shemetz/precise-drawing-tools/blob/master/Readme.md",
+  "changelog": "https://github.com/shemetz/precise-drawing-tools/blob/master/Changelog.md",
+  "license": "https://github.com/shemetz/precise-drawing-tools/blob/master/License.txt",
+  "bugs": "https://github.com/shemetz/precise-drawing-tools/issues",
+  "relationships": {
+    "requires": [
+      {
+        "id": "lib-wrapper",
+        "type": "module",
+        "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/latest/download/module.json",
+        "compatibility": {
+          "minimum": "1.0.0.0"
+        }
+      }
+    ]
+  },
+  "authors": [
+    {
+      "name": "shemetz",
+      "discord": "shem#0226",
+      "email": "itamarcu+foundry@gmail.com",
+      "flags": {}
+    }
+  ]
+}
