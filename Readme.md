@@ -9,9 +9,9 @@ FoundryVTT module to make the drawing tool more precise in several ways.
 
 To install, browse for it in the module browser, or [directly copy the manifest link for the latest release](https://github.com/shemetz/precise-drawing-tools/releases/latest/download/module.json).
 
-# Features
+# Features (mostly affecting freehand drawing)
 
-## Disabled grid-snapping when using freehand tool (allow precise starting points for strokes)
+## Disabled grid-snapping (allow precise starting points for strokes)
 ![](metadata/demo_grid_snapping.gif)
 
 ## Disabled drag resistance (allow very short strokes)
