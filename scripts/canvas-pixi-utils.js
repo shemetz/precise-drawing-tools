@@ -1,54 +1,11 @@
 
-/**
- * https://github.com/League-of-Foundry-Developers/simplefog/blob/master/js/helpers.js
- */
 export function readPixel (target, x = 0, y = 0) {
-  const { renderer } = canvas.app
-  let resolution
-  let renderTexture
-  let generated = false
-  if (target instanceof PIXI.RenderTexture) {
-    renderTexture = target
-  } else {
-    renderTexture = renderer.generateTexture(target)
-    generated = true
-  }
-  if (renderTexture) {
-    resolution = renderTexture.baseTexture.resolution
-    renderer.renderTexture.bind(renderTexture)
-  }
-  const pixel = new Uint8Array(4)
-  // read pixels to the array
-  const { gl } = renderer
-  gl.readPixels(x * resolution, y * resolution, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel)
-  if (generated) {
-    renderTexture.destroy(true)
-  }
-  return pixel
+  return canvas.app.renderer.plugins.extract.pixels(target, new PIXI.Rectangle(x, y, 1, 1))
 }
 
 
 export function readAllPixels (target) {
-  const { renderer } = canvas.app
-  let renderTexture
-  let generated = false
-  if (target instanceof PIXI.RenderTexture) {
-    renderTexture = target
-  } else {
-    renderTexture = renderer.generateTexture(target)
-    generated = true
-  }
-  if (renderTexture) {
-    renderer.renderTexture.bind(renderTexture)
-  }
-  const pixel = new Uint8Array(4 * target.width * target.height)
-  // read pixels to the array
-  const { gl } = renderer
-  gl.readPixels(0, 0, target.width, target.height, gl.RGBA, gl.UNSIGNED_BYTE, pixel)
-  if (generated) {
-    renderTexture.destroy(true)
-  }
-  return pixel
+  return canvas.app.renderer.plugins.extract.pixels(target)
 }
 
 
