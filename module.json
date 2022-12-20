@@ -1,13 +1,10 @@
 {
-  "name": "precise-drawing-tools",
   "id": "precise-drawing-tools",
   "title": "Precise Drawing Tools",
   "description": "Improves the freehand drawing tools to enable more detailed artwork.",
-  "version": "1.0.0",
-  "minimumCoreVersion": "9",
-  "compatibleCoreVersion": "10",
+  "version": "1.1.0",
   "compatibility": {
-    "minimum": "9",
+    "minimum": "10",
     "verified": "10"
   },
   "esmodules": [
@@ -27,7 +24,8 @@
         "type": "module",
         "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/latest/download/module.json",
         "compatibility": {
-          "minimum": "1.0.0.0"
+          "minimum": "1.0.0.0",
+          "verified": "1.12.11.0"
         }
       }
     ]

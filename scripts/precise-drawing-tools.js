@@ -35,7 +35,6 @@ function _handleMouseDown_Wrapper (wrapped, ...args) {
  * @private
  */
 function _handleMouseMove_Wrapper (wrapped, ...args) {
-  const event = args[0]
   if (!this.state === this.states.DRAG) return wrapped(...args)
   if (this._dragRight) return wrapped(...args) // not left-click move
   if (!disableDragResistance) return wrapped(...args)
