@@ -5,7 +5,7 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.2.0] - 2022-12-21
-- Added Dynamic Sample Rate feature!
+- Added Dynamic Sample Rate feature! (#4)
 
 ## [1.1.0] - 2022-12-20
 - Improved color picker, will now grab a lower and more "background" color (before lighting and before UI elements
@@ -21,4 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## See also: [Unreleased]
 
 [1.0.0]: https://github.com/shemetz/precise-drawing-tools/compare/0.0.1...1.0.0
-[Unreleased]: https://github.com/shemetz/precise-drawing-tools/compare/1.0.0...HEAD
+[1.1.0]: https://github.com/shemetz/precise-drawing-tools/compare/1.0.0...1.1.0
+[1.2.0]: https://github.com/shemetz/precise-drawing-tools/compare/1.1.0...1.2.0
+[Unreleased]: https://github.com/shemetz/precise-drawing-tools/compare/1.2.0...HEAD
