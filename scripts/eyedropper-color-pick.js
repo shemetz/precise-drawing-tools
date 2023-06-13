@@ -87,13 +87,12 @@ export const hookEyedropperColorPicker = () => {
       ' Hold Shift to change the fill color instead.',
     editable: [
       {
-        key: 'KeyK'
-      }
+        key: 'KeyK',
+      },
     ],
     reservedModifiers: [SHIFT, ALT],
     onDown: () => {
       if (!getSetting('enable-eyedropper-color-picker')) {
-        screenRenderCache = null
         return false
       }
       if ($(`.scene-control.active`).attr('data-control') === 'drawings') {

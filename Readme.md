@@ -24,6 +24,8 @@ or [directly copy the manifest link for the latest release](https://github.com/s
 
 ![](metadata/demo_double_click.gif)
 
+Note: as of Foundry V11, rapid strokes are still somewhat limited, so you can't do it as fast as you want
+
 ## Dynamic sampling rate (improve resolution of quick strokes)
 
 ![](metadata/screenshot_dynamic_sampling_rate.png)
