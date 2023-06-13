@@ -1,3 +1,3 @@
 export function getScreenMousePosition () {
-  return canvas.primary.toGlobal(canvas.mousePosition)
+  return canvas.app.stage.toGlobal(canvas.mousePosition)
 }
