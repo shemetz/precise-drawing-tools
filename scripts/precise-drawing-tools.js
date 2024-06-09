@@ -24,16 +24,19 @@ const resetFreehandSamplingRate = () => {
   lastFewMoments.splice(0, lastFewMoments.length)
 }
 
+/**
+ * note - Foundry defaults to undefined drag resistance, but the handlePointerMove code defaults to
+ * `this.options.dragResistance || (canvas.dimensions.size / 4)` - which means that if we want to "disable" drag
+ * resistance we want to set it to a very small but defined and non-zero value (in this case, 0.1).
+ *
+ * The previous_dragResistance variable memory to revert to the old value is only here as backup in case a different
+ * module is also messing with the drag resistance.
+ */
 let previous_dragResistance = null
 
 function handleMouseDown (mouseDownEvent) {
   if (mouseDownEvent.data.originalEvent.button !== 0) return // not left-click
   if (!isActivelyDrawingWithFreehand()) return // not freehand tool
-
-  // disabling double-click delay by setting the "last left-click time" to be more than 250ms in the past
-  if (getSetting('disable-double-click-while-drawing')) {
-    canvas.mouseInteractionManager.lcTime = -999
-  }
 
   if (getSetting('disable-drag-resistance-while-drawing')) {
     // temporarily set dragResistance to be minimal, later revert it on mouseup
@@ -112,24 +115,9 @@ function handleMouseMove (mouseMoveEvent) {
 }
 
 Hooks.once('init', function () {
-  game.settings.register(MODULE_ID, 'disable-grid-snapping-while-drawing', {
-    name: `Disable grid snapping while drawing`,
-    scope: 'client',
-    config: true,
-    type: Boolean,
-    default: true,
-    onChange: updateActiveToolLimits,
-  })
   game.settings.register(MODULE_ID, 'disable-drag-resistance-while-drawing', {
     name: `Disable drag resistance while drawing`,
-    scope: 'client',
-    config: true,
-    type: Boolean,
-    default: true,
-    onChange: updateActiveToolLimits,
-  })
-  game.settings.register(MODULE_ID, 'disable-double-click-while-drawing', {
-    name: `Disable double click while drawing`,
+    hint: `Allows making short strokes - otherwise, the minimum size of each drawing is 1/4th of a square (usually 25px)`,
     scope: 'client',
     config: true,
     type: Boolean,
@@ -164,26 +152,7 @@ Hooks.once('init', function () {
   })
 })
 
-/**
- * this is an alternative way to disable snapping to grid;  for now I won't be using it
- */
-function gridPrecision_Wrapper (wrapped, ...args) {
-  if (isActivelyDrawingWithFreehand() && getSetting('disable-grid-snapping-while-drawing')) {
-    return 1000
-  } else {
-    return wrapped(args)
-  }
-}
-
 Hooks.once('setup', function () {
-  libWrapper.register(
-    MODULE_ID,
-    'DrawingsLayer.prototype.gridPrecision',
-    function (wrapped, ...args) {
-      return gridPrecision_Wrapper.bind(this)(wrapped, ...args)
-    },
-    'MIXED',
-  )
   hookEyedropperColorPicker()
   console.log('Done setting up Precise Drawing Tools.')
 })
