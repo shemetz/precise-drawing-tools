@@ -22,6 +22,37 @@ function getMousePixelColorAndAlpha () {
   return { color, alpha }
 }
 
+/**
+ TIP:
+
+ It's easy to test this with a short code snippet that:
+ 1. dumps the canvas texture into a base64 string
+ 2. opens a new tab with this base64 string as the source of a new image
+
+ Behold:
+
+ ```js
+ let dump = await canvas.app.renderer.extract.base64(canvas.primary.renderTexture)
+ window.open().document.write("<img src='" + dump + "'/>")
+ ```
+
+ The result image is good because:
+ - it includes the background
+ - it includes tokens and tiles (even on higher altitudes)
+ - it includes object drawings
+ - it ignores lighting
+ - it ignores UI elements
+
+ But:
+ - it includes weather effects
+ - it includes scene darkness  TODO - get color pick to better ignore scene darkness! (workaround for now is to disable temporarily)
+
+ Compare this to a worse alternative by replacing canvas.primary.renderTexture with canvas.stage or canvas.environment.
+
+ Also compare:
+ - canvas.effects.illumination.renderTexture
+ - canvas.primary.background
+ */
 function getMousePixel () {
   const { x, y } = getScreenMousePosition()
   const pixelRGBA = readPixel(canvas.primary.renderTexture, x, y)
@@ -68,7 +99,7 @@ function deactivateEyedropperTool () {
 
 function activateColorPickFromCursor () {
   deactivateEyedropperTool()
-  // set color in default drawing config.  alt to switch fill/stroke
+  // set color in default drawing config.  shift to switch fill/stroke
   const fillOrStroke = isFillOrStroke() ? 'fill' : 'stroke'
   return colorPickFromCursor(fillOrStroke)
 }
@@ -79,8 +110,21 @@ function startShowingEyedropperColor () {
   canvas.stage.on('mousedown', onMouseMoveColorEyedropperTool)
 }
 
+let prevDarknessLevel = undefined
+
+function temporarilyDisableSceneDarknessAndWeather () {
+  prevDarknessLevel = canvas.darknessLevel
+  canvas.environment.initialize({ environment: { darknessLevel: 0 } })
+  canvas.weather.weatherEffects.visible = false
+}
+
+function reenableSceneDarknessAndWeather () {
+  canvas.environment.initialize({ environment: { darknessLevel: prevDarknessLevel } })
+  canvas.weather.weatherEffects.visible = true
+}
+
 export const hookEyedropperColorPicker = () => {
-  const { SHIFT, ALT } = KeyboardManager.MODIFIER_KEYS
+  const { SHIFT } = KeyboardManager.MODIFIER_KEYS
   game.keybindings.register(MODULE_ID, 'eyedropper', {
     name: 'Eyedropper (Color Pick)',
     hint: 'Pick the color of the current pixel under the cursor, and set it as current stroke color.' +
@@ -90,7 +134,7 @@ export const hookEyedropperColorPicker = () => {
         key: 'KeyK',
       },
     ],
-    reservedModifiers: [SHIFT, ALT],
+    reservedModifiers: [SHIFT],
     onDown: () => {
       if (!getSetting('enable-eyedropper-color-picker')) {
         return false
@@ -98,6 +142,7 @@ export const hookEyedropperColorPicker = () => {
       if ($(`.scene-control.active`).attr('data-control') === 'drawings') {
         startShowingEyedropperColor()
         onMouseMoveColorEyedropperTool()
+        temporarilyDisableSceneDarknessAndWeather()
         return true // consumed
       } else {
         return false
@@ -109,6 +154,7 @@ export const hookEyedropperColorPicker = () => {
       }
       if ($(`.scene-control.active`).attr('data-control') === 'drawings') {
         activateColorPickFromCursor()
+        reenableSceneDarknessAndWeather()
         return true // consumed
       } else {
         return false
