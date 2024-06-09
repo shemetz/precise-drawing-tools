@@ -12,19 +12,10 @@ or [directly copy the manifest link for the latest release](https://github.com/s
 
 # Features (mostly affecting freehand drawing)
 
-## Disabled grid-snapping (allow precise starting points for strokes)
-
-![](metadata/demo_grid_snapping.gif)
 
 ## Disabled drag resistance (allow very short strokes)
 
 ![](metadata/demo_drag_resistance.gif)
-
-## Disabled double click (allow rapidly creating strokes)
-
-![](metadata/demo_double_click.gif)
-
-Note: as of Foundry V11, rapid strokes are still somewhat limited, so you can't do it as fast as you want
 
 ## Dynamic sampling rate (improve resolution of quick strokes)
 
@@ -35,4 +26,16 @@ Note: as of Foundry V11, rapid strokes are still somewhat limited, so you can't 
 ![](metadata/demo_eyedropper.gif)
 
 Note: this color picker demo gif is outdated, as the feature now **ignores lighting**, which
-allows drawings to more seamlessly fit into the background.
+allows drawings to more seamlessly fit into the background.  However, as of Foundry V12, this requires temporarily
+disabling the scene darkness and weather effects as long as the button (K) is held, to ensure that the selected color is
+precisely the right color (from the background/tile/token/drawing you're hovering over), rather than a darkened version of it.
+
+# Old features - now core behavior as of Foundry V12 (awesome!)
+
+### Disabled grid-snapping (allow precise starting points for strokes)
+
+![](metadata/old_demo_grid_snapping.gif)
+
+### Disabled double click (allow rapidly creating strokes)
+
+![](metadata/old_demo_double_click.gif)
