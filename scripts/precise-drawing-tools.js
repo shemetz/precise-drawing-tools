@@ -159,6 +159,9 @@ Hooks.once('setup', function () {
 
 Hooks.once('canvasReady', function () {
   Hooks.on('renderSceneControls', updateActiveToolLimits)
+})
+
+Hooks.on('canvasReady', function () {
   canvas.stage.on('mousedown', handleMouseDown)
   canvas.stage.on('mouseup', handleMouseUp)
   canvas.stage.on('mousemove', handleMouseMove)
