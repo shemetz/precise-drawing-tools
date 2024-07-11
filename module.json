@@ -2,7 +2,7 @@
   "id": "precise-drawing-tools",
   "title": "Precise Drawing Tools",
   "description": "Improves the freehand drawing tools to enable more detailed artwork.",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "compatibility": {
     "minimum": "11",
     "verified": "11"
