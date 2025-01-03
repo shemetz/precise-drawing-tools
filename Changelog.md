@@ -1,3 +1,6 @@
+## 1.4.2 - 2025-01-03
+- Improved github workflow automation
+
 ## 1.4.1 - 2024-07-11
 - Fix drag-resistance setting not working after scene changes (#8)
 
