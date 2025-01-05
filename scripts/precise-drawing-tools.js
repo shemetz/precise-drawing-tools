@@ -162,6 +162,7 @@ Hooks.once('canvasReady', function () {
 })
 
 Hooks.on('canvasReady', function () {
+  // TODO refactor and replace mousemove with pointermove, etc, for drawing tablet support?
   canvas.stage.on('mousedown', handleMouseDown)
   canvas.stage.on('mouseup', handleMouseUp)
   canvas.stage.on('mousemove', handleMouseMove)
