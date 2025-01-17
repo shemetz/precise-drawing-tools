@@ -7,6 +7,10 @@
 
 FoundryVTT module to make the drawing tool more precise in several ways.
 
+### (With this module and a talent for art, you too can draw amazing and needlessly detailed backgrounds like this one!)
+![](metadata/screenshot_freehanded_fishery.png)
+(credit to my friend xin, who still wishes Foundry would add a "real" canvas, with eraser and stroke support.  one day...)
+
 To install, browse for it in the module browser,
 or [directly copy the manifest link for the latest release](https://github.com/shemetz/precise-drawing-tools/releases/latest/download/module.json).
 
