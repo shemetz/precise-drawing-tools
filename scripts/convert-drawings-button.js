@@ -1,6 +1,7 @@
 /* MIT License   Copyright (c) 2020 KayelGee    https://github.com/KayelGee/DrawingTokenizer */
 
 import { convertDrawingsToImage } from './canvas-pixi-utils.js'
+import { getSetting } from './precise-drawing-tools.js'
 
 const getWorldPath = () => {
   return 'worlds/' + game.world.id
@@ -136,11 +137,12 @@ const openConvertDrawingsDialog = async () => {
  * Hook into the Drawing toolbar and add a button for conversion of drawings
  */
 export const addConvertDrawingsButton = (controls) => {
+  if (!getSetting('enable-convert-drawings-button')) return
   for (let i = 0; i < controls.length; i++) {
     if (controls[i].name === 'drawings') {
       controls[i].tools.push({
-        name: 'precise-drawing-tools_convert-to-image',
-        title: 'Convert Drawings to Image',
+        name: 'precise-drawing-tools_convert-to-tile',
+        title: 'Convert Drawings to Tile',
         icon: 'fas fa-image',
         onClick: openConvertDrawingsDialog,
         button: true,

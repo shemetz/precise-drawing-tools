@@ -151,6 +151,14 @@ Hooks.once('init', function () {
     type: Boolean,
     default: true,
   })
+  game.settings.register(MODULE_ID, 'enable-convert-drawings-button', {
+    name: `Enable "Convert Drawings" button`,
+    hint: `This new button in the Drawings controls allows you to convert selected drawings to a single image file and optionally create a tile with that image in the same location.  The image will be saved to the worlds/[your-world-id]/PDT-converted-drawings directory.`,
+    scope: 'client',
+    config: true,
+    type: Boolean,
+    default: true,
+  })
 })
 
 Hooks.once('setup', function () {
