@@ -16,10 +16,6 @@
 - [Boneyard Drawing Tools](https://github.com/operation404/boneyard-drawing-tools)
 - [Sketch Tiles](https://foundryvtt.com/packages/sketch-tiles)  (it's nice, maybe I could fork it?  desperately needs color picker and eraser and transparency)
 
-
-# Consume "drawing tokenizer" into this module?
-- [Drawing Tokenizer](https://github.com/KayelGee/DrawingTokenizer) (+[my fork](https://github.com/shemetz/DrawingTokenizer))
-
 # Add Eraser tool?
 It would be a tool that lets you drag the cursor through a bunch of Drawing objects and instantly erase everything you
 move oit through.  Ctrl+Z would hopefully still work afterwards to undo what you did.

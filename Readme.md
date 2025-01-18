@@ -34,6 +34,10 @@ allows drawings to more seamlessly fit into the background.  However, as of Foun
 disabling the scene darkness and weather effects as long as the button (K) is held, to ensure that the selected color is
 precisely the right color (from the background/tile/token/drawing you're hovering over), rather than a darkened version of it.
 
+## Convert Drawings to Tile (new button in the drawing tools)
+
+Select some drawings, press the button, look at a preview, and then either download the image or set it as a tile (uploading it to `worlds/[your-world-id]/PDT-converted-drawings`).
+
 # Old features - now core behavior as of Foundry V12 (awesome!)
 
 ### Disabled grid-snapping (allow precise starting points for strokes)
