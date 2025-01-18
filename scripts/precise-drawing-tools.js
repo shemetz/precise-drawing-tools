@@ -1,4 +1,5 @@
 import { hookEyedropperColorPicker } from './eyedropper-color-pick.js'
+import { addConvertDrawingsButton } from './convert-drawings-button.js'
 
 export const MODULE_ID = 'precise-drawing-tools'
 
@@ -159,6 +160,7 @@ Hooks.once('setup', function () {
 
 Hooks.once('canvasReady', function () {
   Hooks.on('renderSceneControls', updateActiveToolLimits)
+  Hooks.on('getSceneControlButtons', addConvertDrawingsButton)
 })
 
 Hooks.on('canvasReady', function () {
