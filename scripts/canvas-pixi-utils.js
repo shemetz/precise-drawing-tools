@@ -18,7 +18,12 @@ const maximumOfAll = (arr) => arr.reduce((max, val) => Math.max(max, val), -Infi
 const WORKAROUND = true
 
 /**
- * Convert selected drawings to a webp image
+ * Convert selected drawings to a webp image.
+ *
+ * The colors get messed up if the line color is half-transparent and any r/g/b value is 255.
+ * Worked-around by adding an initial pass to desaturate these colors to 254, then reverting after.
+ *
+ * FIXME: rotated drawings are drawn as if they aren't rotated
  */
 export const convertDrawingsToImage = async (drawings, quality) => {
   // Calculate bounds of drawing objects
@@ -30,6 +35,38 @@ export const convertDrawingsToImage = async (drawings, quality) => {
   const height = bottom - top
 
   const container = new PIXI.Container({ width, height })
+
+  const workaroundUpdates = []
+  const workaroundReverseUpdates = []
+  if (WORKAROUND) {
+    // workaround for bad colors bugs
+    // desaturate all colors that are both maximally saturated in r/g/b and are partially transparent
+    // these color impurities will be undone after the image is rendered
+    for (const drawing of drawings) {
+      const { strokeColor, strokeAlpha, fillColor, fillAlpha, textColor, textAlpha } = drawing.document
+      if (
+        (strokeAlpha > 0 && strokeAlpha < 1 && strokeColor.rgb.includes(1))
+        || (fillAlpha > 0 && fillAlpha < 1 && fillColor.rgb.includes(1))
+        || (textAlpha > 0 && textAlpha < 1 && textColor.rgb.includes(1))
+      ) {
+        workaroundUpdates.push({
+          _id: drawing.id,
+          strokeColor: Color.fromRGB(strokeColor.rgb.map((c, i) => c === 1 ? 0.999 : c)), // 0.999 -> 254 (not 255)
+          fillColor: Color.fromRGB(fillColor.rgb.map((c, i) => c === 1 ? 0.999 : c)),
+          textColor: Color.fromRGB(textColor.rgb.map((c, i) => c === 1 ? 0.999 : c)),
+        })
+        workaroundReverseUpdates.push({
+          _id: drawing.id,
+          strokeColor,
+          fillColor,
+          textColor,
+        })
+      }
+      await canvas.scene.updateEmbeddedDocuments('Drawing', workaroundUpdates)
+      // sleep and rerender for 1 frame
+      await new Promise(resolve => setTimeout(resolve, 0))
+    }
+  }
 
   // Copy all drawings into a PIXI Container
   for (const drawing of drawings) {
