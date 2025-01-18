@@ -12,8 +12,8 @@ const getUploadPath = () => {
 
 const uploadBlobToFoundry = async (blob, filename) => {
   await createUploadDirectory()
-  const file = new File([blob], filename, { type: 'image/webp' });
-  const storage = "data"
+  const file = new File([blob], filename, { type: 'image/webp' })
+  const storage = 'data'
   const filePath = getUploadPath()
   return FilePicker.upload(storage, filePath, file, {}, { notify: true })
 }
@@ -26,7 +26,7 @@ const createTileFromImage = async (uploadedPath, left, top, width, height) => {
     height,
     texture: { src: uploadedPath },
   }
-  return TileDocument.create(tileData, {parent: canvas.scene})
+  return TileDocument.create(tileData, { parent: canvas.scene })
 }
 
 /**
@@ -55,8 +55,12 @@ const openConvertDrawingsDialog = async () => {
   const dialogWidth = 800
   const imageMaxHeight = 800
   const formHeight = 120
-  const displayedImageHeight = Math.min(height, imageMaxHeight)
-  const displayedImageWidth = width * (displayedImageHeight / height)
+  let displayedImageHeight = Math.min(height, imageMaxHeight)
+  let displayedImageWidth = width * (displayedImageHeight / height)
+  if (displayedImageWidth > dialogWidth - 20) {
+    displayedImageWidth = dialogWidth - 20
+    displayedImageHeight = height * (displayedImageWidth / width)
+  }
 
   const randomId = foundry.utils.randomID(4)
   const form = `
