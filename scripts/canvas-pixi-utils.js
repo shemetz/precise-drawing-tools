@@ -23,7 +23,7 @@ const WORKAROUND = true
  * The colors get messed up if the line color is half-transparent and any r/g/b value is 255.
  * Worked-around by adding an initial pass to desaturate these colors to 254, then reverting after.
  *
- * FIXME: rotated drawings are drawn as if they aren't rotated
+ * FIXME: rotated drawings are slightly cropped in edge cases
  */
 export const convertDrawingsToImage = async (drawings, quality) => {
   // Calculate bounds of drawing objects
@@ -72,7 +72,7 @@ export const convertDrawingsToImage = async (drawings, quality) => {
   for (const drawing of drawings) {
     const newShape = drawing.shape.clone()
     // Set position within the container
-    newShape.position.set(drawing.x - left, drawing.y - top)
+    newShape.transform = drawing.shape.transform
     // Add the shape to the container
     container.addChild(newShape)
     // Text drawings have an additional part, not just the shape (border) but also the text itself
@@ -81,6 +81,7 @@ export const convertDrawingsToImage = async (drawings, quality) => {
       textShape.eventMode = 'none'
       // Set position within the container, needs to be center-aligned
       textShape.position.set(drawing.x - left + drawing.text.x, drawing.y - top + drawing.text.y)
+      textShape.rotation = drawing.shape.rotation
       textShape.anchor.set(0.5, 0.5)
       // Add the shape to the container
       container.addChild(textShape)
