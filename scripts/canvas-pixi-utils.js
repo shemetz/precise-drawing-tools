@@ -14,6 +14,18 @@ export function rgbaToHex (r, g, b, a) {
 
 const minimumOfAll = (arr) => arr.reduce((min, val) => Math.min(min, val), Infinity)
 const maximumOfAll = (arr) => arr.reduce((max, val) => Math.max(max, val), -Infinity)
+const getCanvasBounds = (drawing) => {
+  if (drawing.shape.canvasBounds) return drawing.shape.canvasBounds
+  // text drawings sometimes lack them
+  // but this trick seems to work:
+  const localBounds = drawing.frame.getLocalBounds()
+  return {
+    x: drawing.x - localBounds.x,
+    y: drawing.y - localBounds.y,
+    width: localBounds.width,
+    height: localBounds.height,
+  }
+}
 
 const WORKAROUND = true
 
@@ -24,13 +36,15 @@ const WORKAROUND = true
  * Worked-around by adding an initial pass to desaturate these colors to 254, then reverting after.
  *
  * FIXME: rotated drawings are slightly cropped in edge cases
+ *
+ * FIXME:  rotations don't work perfectly well with text, but they work well enough...
  */
 export const convertDrawingsToImage = async (drawings, quality) => {
   // Calculate bounds of drawing objects
-  const left = minimumOfAll(drawings.map(d => d.shape.canvasBounds.x))
-  const top = minimumOfAll(drawings.map(d => d.shape.canvasBounds.y))
-  const right = maximumOfAll(drawings.map(d => d.shape.canvasBounds.x + d.shape.canvasBounds.width))
-  const bottom = maximumOfAll(drawings.map(d => d.shape.canvasBounds.y + d.shape.canvasBounds.height))
+  const left = minimumOfAll(drawings.map(d => getCanvasBounds(d).x))
+  const top = minimumOfAll(drawings.map(d => getCanvasBounds(d).y))
+  const right = maximumOfAll(drawings.map(d => getCanvasBounds(d).x + getCanvasBounds(d).width))
+  const bottom = maximumOfAll(drawings.map(d => getCanvasBounds(d).y + getCanvasBounds(d).height))
   const width = right - left
   const height = bottom - top
 
@@ -64,14 +78,14 @@ export const convertDrawingsToImage = async (drawings, quality) => {
       }
       await canvas.scene.updateEmbeddedDocuments('Drawing', workaroundUpdates)
       // sleep and rerender for 1 frame
-      await new Promise(resolve => setTimeout(resolve, 0))
+      await new Promise(resolve => setTimeout(resolve, 10))
     }
   }
 
   // Copy all drawings into a PIXI Container
   for (const drawing of drawings) {
     const newShape = drawing.shape.clone()
-    // Set position within the container
+    // Set position (and rotation) within the container
     newShape.transform = drawing.shape.transform
     // Add the shape to the container
     container.addChild(newShape)
@@ -80,8 +94,9 @@ export const convertDrawingsToImage = async (drawings, quality) => {
       const textShape = new PreciseText(drawing.document.text || '', drawing._getTextStyle())
       textShape.eventMode = 'none'
       // Set position within the container, needs to be center-aligned
-      textShape.position.set(drawing.x - left + drawing.text.x, drawing.y - top + drawing.text.y)
+      textShape.position.set(drawing.x + drawing.text.x, drawing.y + drawing.text.y)
       textShape.rotation = drawing.shape.rotation
+      textShape.alpha = drawing.document.textAlpha
       textShape.anchor.set(0.5, 0.5)
       // Add the shape to the container
       container.addChild(textShape)
