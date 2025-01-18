@@ -90,6 +90,7 @@ export const convertDrawingsToImage = async (drawings, quality) => {
 
   // Clean up
   container.destroy({ children: true })
+  await canvas.scene.updateEmbeddedDocuments('Drawing', workaroundReverseUpdates)
 
   return {
     blob,
