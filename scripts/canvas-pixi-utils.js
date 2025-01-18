@@ -12,15 +12,20 @@ export function rgbaToHex (r, g, b, a) {
       : '')
 }
 
+const minimumOfAll = (arr) => arr.reduce((min, val) => Math.min(min, val), Infinity)
+const maximumOfAll = (arr) => arr.reduce((max, val) => Math.max(max, val), -Infinity)
+
+const WORKAROUND = true
+
 /**
  * Convert selected drawings to a webp image
  */
 export const convertDrawingsToImage = async (drawings, quality) => {
   // Calculate bounds of drawing objects
-  const left = drawings.reduce((min, drawing) => Math.min(min, drawing.x), Infinity)
-  const top = drawings.reduce((min, drawing) => Math.min(min, drawing.y), Infinity)
-  const right = drawings.reduce((max, drawing) => Math.max(max, drawing.x + drawing.shape.width), -Infinity)
-  const bottom = drawings.reduce((max, drawing) => Math.max(max, drawing.y + drawing.shape.height), -Infinity)
+  const left = minimumOfAll(drawings.map(d => d.shape.canvasBounds.x))
+  const top = minimumOfAll(drawings.map(d => d.shape.canvasBounds.y))
+  const right = maximumOfAll(drawings.map(d => d.shape.canvasBounds.x + d.shape.canvasBounds.width))
+  const bottom = maximumOfAll(drawings.map(d => d.shape.canvasBounds.y + d.shape.canvasBounds.height))
   const width = right - left
   const height = bottom - top
 
