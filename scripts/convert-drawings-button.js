@@ -102,9 +102,9 @@ const openConvertDrawingsDialog = async () => {
           URL.revokeObjectURL(blobUrl)
         },
       },
-      upload: {
-        icon: '<i class="fas fa-upload"></i>',
-        label: 'Delete drawings, replace with tile using image upload',
+      uploadAndKeep: {
+        icon: '<i class="fas fa-eye-slash"></i>',
+        label: 'Hide drawings + replace with tile',
         callback: async html => {
           URL.revokeObjectURL(blobUrl)
           const filename = html.find('input')[0].value.trim()
@@ -116,7 +116,13 @@ const openConvertDrawingsDialog = async () => {
           const uploadResult = await uploadBlobToFoundry(blob, fullFilename)
           const uploadedPath = uploadResult.path
           await createTileFromImage(uploadedPath, left, top, width, height)
-          // TODO delete drawings
+          const updates = selectedDrawings.map(drawing => {
+            return {
+              _id: drawing.id,
+              hidden: true,
+            }
+          })
+          await canvas.scene.updateEmbeddedDocuments('Drawing', updates)
         },
       },
     },
