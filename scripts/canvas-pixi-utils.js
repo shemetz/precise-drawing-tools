@@ -66,9 +66,9 @@ export const convertDrawingsToImage = async (drawings, quality) => {
       ) {
         workaroundUpdates.push({
           _id: drawing.id,
-          strokeColor: Color.fromRGB(strokeColor.rgb.map((c, i) => c === 1 ? 0.999 : c)), // 0.999 -> 254 (not 255)
-          fillColor: Color.fromRGB(fillColor.rgb.map((c, i) => c === 1 ? 0.999 : c)),
-          textColor: Color.fromRGB(textColor.rgb.map((c, i) => c === 1 ? 0.999 : c)),
+          strokeColor: Color.fromRGB(strokeColor.rgb.map(c => c === 1 ? 0.999 : c)), // 0.999 -> 254 (not 255)
+          fillColor: Color.fromRGB(fillColor.rgb.map(c => c === 1 ? 0.999 : c)),
+          textColor: Color.fromRGB(textColor.rgb.map(c => c === 1 ? 0.999 : c)),
         })
         workaroundReverseUpdates.push({
           _id: drawing.id,
