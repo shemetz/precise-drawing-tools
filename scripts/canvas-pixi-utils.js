@@ -57,11 +57,11 @@ export const convertDrawingsToImage = async (drawings, quality) => {
     // desaturate all colors that are both maximally saturated in r/g/b and are partially transparent
     // these color impurities will be undone after the image is rendered
     for (const drawing of drawings) {
-      const { strokeColor, strokeAlpha, fillColor, fillAlpha, textColor, textAlpha } = drawing.document
+      const { strokeColor, strokeAlpha, fillColor, fillAlpha, fillType, textColor, textAlpha } = drawing.document
       if (
         (strokeAlpha > 0 && strokeAlpha < 1 && strokeColor.rgb.includes(1))
         || (fillAlpha > 0 && fillAlpha < 1 && fillColor.rgb.includes(1))
-        || (textAlpha > 0 && textAlpha < 1 && textColor.rgb.includes(1))
+        || (textAlpha > 0 && textAlpha < 1 && textColor.rgb.includes(1) && fillType !== 0)
       ) {
         workaroundUpdates.push({
           _id: drawing.id,
