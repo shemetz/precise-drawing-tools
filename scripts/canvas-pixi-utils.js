@@ -76,10 +76,10 @@ export const convertDrawingsToImage = async (drawings, quality) => {
           textColor,
         })
       }
-      await canvas.scene.updateEmbeddedDocuments('Drawing', workaroundUpdates)
-      // sleep and rerender for 1 frame
-      await new Promise(resolve => setTimeout(resolve, 10))
     }
+    await canvas.scene.updateEmbeddedDocuments('Drawing', workaroundUpdates)
+    // sleep and rerender for 1 frame
+    await new Promise(resolve => setTimeout(resolve, 10))
   }
 
   // Copy all drawings into a PIXI Container
