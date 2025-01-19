@@ -1,5 +1,6 @@
 ## 1.5.0 - 2025-01-19
 - Added new "Convert Drawings to Tile" button
+- 1.5.1 - Optimized it a little bit, and added a loading bar
 
 ## 1.4.2 - 2025-01-03
 - Improved github workflow automation
