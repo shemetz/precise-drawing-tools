@@ -49,14 +49,15 @@ export const convertDrawingsToImage = async (drawings, quality) => {
   const height = bottom - top
 
   const container = new PIXI.Container({ width, height })
-
+  SceneNavigation.displayProgressBar({ label: 'Preparing drawings...', pct: 1 })
   const workaroundUpdates = []
   const workaroundReverseUpdates = []
   if (WORKAROUND) {
     // workaround for bad colors bugs
     // desaturate all colors that are both maximally saturated in r/g/b and are partially transparent
     // these color impurities will be undone after the image is rendered
-    for (const drawing of drawings) {
+    for (let i = 0; i < drawings.length; i++) {
+      const drawing = drawings[i]
       const { strokeColor, strokeAlpha, fillColor, fillAlpha, fillType, textColor, textAlpha } = drawing.document
       if (
         (strokeAlpha > 0 && strokeAlpha < 1 && strokeColor.rgb.includes(1))
@@ -75,15 +76,21 @@ export const convertDrawingsToImage = async (drawings, quality) => {
           fillColor,
           textColor,
         })
+        SceneNavigation.displayProgressBar({ label: 'Workaround...', pct: Math.round(1 + 20 * (i / drawings.length)) })
       }
     }
-    await canvas.scene.updateEmbeddedDocuments('Drawing', workaroundUpdates)
-    // sleep and rerender for 1 frame
-    await new Promise(resolve => setTimeout(resolve, 10))
+    if (workaroundUpdates.length > 0) {
+      SceneNavigation.displayProgressBar({ label: 'Workaround...', pct: 25 })
+      await canvas.scene.updateEmbeddedDocuments('Drawing', workaroundUpdates)
+      // sleep and rerender for 1 frame
+      await new Promise(resolve => setTimeout(resolve, 10))
+    }
   }
+  SceneNavigation.displayProgressBar({ label: 'Collecting drawings...', pct: 30 })
 
   // Copy all drawings into a PIXI Container
-  for (const drawing of drawings) {
+  for (let i = 0; i < drawings.length; i++) {
+    const drawing = drawings[i]
     const newShape = drawing.shape.clone()
     // Set position (and rotation) within the container
     newShape.transform = drawing.shape.transform
@@ -101,12 +108,29 @@ export const convertDrawingsToImage = async (drawings, quality) => {
       // Add the shape to the container
       container.addChild(textShape)
     }
+    SceneNavigation.displayProgressBar(
+      { label: 'Collecting drawings...', pct: Math.round(30 + 10 * (i / drawings.length)) })
   }
+  SceneNavigation.displayProgressBar({ label: 'Rendering image...', pct: 40 })
+  const approxTimeToRender = 1 * drawings.length // very approximately 1ms per drawing... 10 seconds for 10k drawings
+  let timeSoFar = 0
+  const interval = setInterval(() => {
+    timeSoFar += 200
+    const pctDoneOfRender = Math.min(100, timeSoFar / approxTimeToRender)
+    SceneNavigation.displayProgressBar(
+      { label: 'Rendering image...', pct: 40 + Math.round(pctDoneOfRender * 49) })
+  }, 200)
   const blob = await getContainerBlob(container, quality)
+  clearInterval(interval)
+  SceneNavigation.displayProgressBar({ label: 'Cleaning up...', pct: 90 })
 
   // Clean up
   container.destroy({ children: true })
-  await canvas.scene.updateEmbeddedDocuments('Drawing', workaroundReverseUpdates)
+  if (workaroundReverseUpdates.length > 0) {
+    SceneNavigation.displayProgressBar({ label: 'Cleaning up...', pct: 95 })
+    await canvas.scene.updateEmbeddedDocuments('Drawing', workaroundReverseUpdates)
+  }
+  SceneNavigation.displayProgressBar({ label: 'Done preparing image.', pct: 100 }) //ends loading
 
   return {
     blob,
@@ -117,7 +141,7 @@ export const convertDrawingsToImage = async (drawings, quality) => {
   }
 }
 const getContainerBlob = async (container, quality) => {
-  const img = await canvas.app.renderer.extract.image(container, 'image/webp', quality)
+  let img = await canvas.app.renderer.extract.image(container, 'image/webp', quality)
   const response = await fetch(img.src)
   return response.blob()
 }
