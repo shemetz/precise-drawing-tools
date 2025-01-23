@@ -114,9 +114,12 @@ const openConvertDrawingsDialog = async () => {
           }
           const fullFilename = filename + '.webp'
 
+          SceneNavigation.displayProgressBar({ label: 'Uploading tile image...', pct: 10 })
           const uploadResult = await uploadBlobToFoundry(blob, fullFilename)
           const uploadedPath = uploadResult.path
+          SceneNavigation.displayProgressBar({ label: 'Creating tile...', pct: 20 })
           await createTileFromImage(uploadedPath, left, top, width, height)
+          SceneNavigation.displayProgressBar({ label: 'Hiding drawings (this may take a while)...', pct: 30 })
           const updates = selectedDrawings.map(drawing => {
             return {
               _id: drawing.id,
@@ -124,6 +127,7 @@ const openConvertDrawingsDialog = async () => {
             }
           })
           await canvas.scene.updateEmbeddedDocuments('Drawing', updates)
+          SceneNavigation.displayProgressBar({ label: 'Done hiding drawings!', pct: 100 })
         },
       },
     },
