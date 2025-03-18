@@ -84,7 +84,7 @@ function setDrawingToolGuiColor (color) {
 }
 
 const isFillOrStroke = () => {
-  return game.keyboard.isModifierActive(KeyboardManager.MODIFIER_KEYS.SHIFT)
+  return game.keyboard.isModifierActive(foundry.helpers.interaction.KeyboardManager.MODIFIER_KEYS.SHIFT)
 }
 
 function onMouseMoveColorEyedropperTool () {
@@ -124,7 +124,7 @@ function reenableSceneDarknessAndWeather () {
 }
 
 export const hookEyedropperColorPicker = () => {
-  const { SHIFT } = KeyboardManager.MODIFIER_KEYS
+  const { SHIFT } = foundry.helpers.interaction.KeyboardManager.MODIFIER_KEYS
   game.keybindings.register(MODULE_ID, 'eyedropper', {
     name: 'Eyedropper (Color Pick)',
     hint: 'Pick the color of the current pixel under the cursor, and set it as current stroke color.' +

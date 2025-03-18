@@ -14,7 +14,7 @@ const updateActiveToolLimits = () => {
 }
 
 const setFreehandSamplingRate = (newSamplingRateMs) => {
-  Drawing.FREEHAND_SAMPLE_RATE = newSamplingRateMs
+  foundry.canvas.placeables.Drawing.FREEHAND_SAMPLE_RATE = newSamplingRateMs
   canvas.mouseInteractionManager.dragTime = -999
 }
 
