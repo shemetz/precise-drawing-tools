@@ -2,10 +2,10 @@
   "id": "precise-drawing-tools",
   "title": "Precise Drawing Tools",
   "description": "Improves the freehand drawing tools to enable more detailed artwork.",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "compatibility": {
-    "minimum": "12",
-    "verified": "12"
+    "minimum": "13",
+    "verified": "13"
   },
   "esmodules": [
     "scripts/precise-drawing-tools.js"
