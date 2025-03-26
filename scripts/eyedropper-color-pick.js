@@ -75,11 +75,29 @@ async function updateDrawingDefaults (changedData) {
 }
 
 function setDrawingToolGuiColor (color) {
-  const j = $('ol.control-tools > li.scene-control.active')
+  /**
+   * override this css bit:
+   *
+   * .ui-control[aria-pressed=true] {
+   *     --control-bg-color: var(--control-active-bg-color);
+   *     --control-border-color: var(--control-active-border-color);
+   *     --control-icon-color: var(--control-active-icon-color);
+   * }
+   *
+   * .ui-control {
+   * ...
+   *     background: var(--control-bg-color);
+   *     border: 1px solid var(--control-border-color);
+   *     color: var(--control-icon-color);
+   * ...
+   * }
+   */
+  const j = $('#scene-controls-tools > li > button.tool.ui-control[aria-pressed="true"]')
   if (isFillOrStroke()) {
     j.css('background', color)
   } else {
     j.css('color', color)
+    j.css('border', `2px solid ${color}`)
   }
 }
 
@@ -112,15 +130,17 @@ function startShowingEyedropperColor () {
 
 let prevDarknessLevel = undefined
 
-function temporarilyDisableSceneDarknessAndWeather () {
+function temporarilyChangeUiDuringColorPicking () {
   prevDarknessLevel = canvas.darknessLevel
   canvas.environment.initialize({ environment: { darknessLevel: 0 } })
   canvas.weather.weatherEffects.visible = false
+  $('#scene-controls')[0].classList.remove('faded-ui')
 }
 
-function reenableSceneDarknessAndWeather () {
+function undoTemporaryUiChanges () {
   canvas.environment.initialize({ environment: { darknessLevel: prevDarknessLevel } })
   canvas.weather.weatherEffects.visible = true
+  $('#scene-controls')[0].classList.add('faded-ui')
 }
 
 export const hookEyedropperColorPicker = () => {
@@ -139,10 +159,10 @@ export const hookEyedropperColorPicker = () => {
       if (!getSetting('enable-eyedropper-color-picker')) {
         return false
       }
-      if ($(`.scene-control.active`).attr('data-control') === 'drawings') {
+      if (ui.controls.control.name === 'drawings') {
         startShowingEyedropperColor()
         onMouseMoveColorEyedropperTool()
-        temporarilyDisableSceneDarknessAndWeather()
+        temporarilyChangeUiDuringColorPicking()
         return true // consumed
       } else {
         return false
@@ -152,9 +172,9 @@ export const hookEyedropperColorPicker = () => {
       if (!getSetting('enable-eyedropper-color-picker')) {
         return false
       }
-      if ($(`.scene-control.active`).attr('data-control') === 'drawings') {
+      if (ui.controls.control.name === 'drawings') {
         activateColorPickFromCursor()
-        reenableSceneDarknessAndWeather()
+        undoTemporaryUiChanges()
         return true // consumed
       } else {
         return false
