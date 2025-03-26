@@ -7,7 +7,7 @@ export function getSetting (settingName) {
   return game.settings.get(MODULE_ID, settingName)
 }
 
-const isActivelyDrawingWithFreehand = () => ui.controls.activeTool === 'freehand'
+const isActivelyDrawingWithFreehand = () => ui.controls.tool.name === 'freehand'
 
 const updateActiveToolLimits = () => {
   resetFreehandSamplingRate()
