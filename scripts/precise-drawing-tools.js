@@ -166,14 +166,12 @@ Hooks.once('setup', function () {
   console.log('Done setting up Precise Drawing Tools.')
 })
 
-Hooks.once('canvasReady', function () {
-  Hooks.on('renderSceneControls', updateActiveToolLimits)
-  Hooks.on('getSceneControlButtons', addConvertDrawingsButton)
-})
-
 Hooks.on('canvasReady', function () {
+  Hooks.on('renderSceneControls', updateActiveToolLimits)
   // TODO refactor and replace mousemove with pointermove, etc, for drawing tablet support?
   canvas.stage.on('mousedown', handleMouseDown)
   canvas.stage.on('mouseup', handleMouseUp)
   canvas.stage.on('mousemove', handleMouseMove)
 })
+
+Hooks.on('getSceneControlButtons', addConvertDrawingsButton)

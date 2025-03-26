@@ -2,6 +2,7 @@
 
 import { convertDrawingsToImage } from './canvas-pixi-utils.js'
 import { getSetting } from './precise-drawing-tools.js'
+import { startProgressBar, stopProgressBar, updateProgressBar } from './progress-bar.js'
 
 const getWorldPath = () => {
   return 'worlds/' + game.world.id
@@ -16,7 +17,7 @@ const uploadBlobToFoundry = async (blob, filename) => {
   const file = new File([blob], filename, { type: 'image/webp' })
   const storage = 'data'
   const filePath = getUploadPath()
-  return FilePicker.upload(storage, filePath, file, {}, { notify: true })
+  return foundry.applications.apps.FilePicker.upload(storage, filePath, file, {}, { notify: true })
 }
 
 const createTileFromImage = async (uploadedPath, left, top, width, height) => {
@@ -27,7 +28,7 @@ const createTileFromImage = async (uploadedPath, left, top, width, height) => {
     height,
     texture: { src: uploadedPath },
   }
-  return TileDocument.create(tileData, { parent: canvas.scene })
+  return CONFIG.Tile.documentClass.create(tileData, { parent: canvas.scene })
 }
 
 /**
@@ -36,11 +37,11 @@ const createTileFromImage = async (uploadedPath, left, top, width, height) => {
 const createUploadDirectory = async () => {
   const options = {}
   const source = 'data'
-  const files = await FilePicker.browse(source, getWorldPath(), options)
+  const files = await foundry.applications.apps.FilePicker.browse(source, getWorldPath(), options)
   const target = getUploadPath()
   const dirExists = files.dirs.includes(target)
   if (!dirExists) {
-    await FilePicker.createDirectory(source, target, options)
+    await foundry.applications.apps.FilePicker.createDirectory(source, target, options)
   }
 }
 
@@ -55,17 +56,18 @@ const openConvertDrawingsDialog = async () => {
   const blobUrl = URL.createObjectURL(blob)
   const dialogWidth = 800
   const imageMaxHeight = 800
-  const formHeight = 120
-  let displayedImageHeight = Math.min(height, imageMaxHeight)
-  let displayedImageWidth = width * (displayedImageHeight / height)
+  const formHeight = 160
+  let displayedImageHeight = Math.round(Math.min(height, imageMaxHeight))
+  let displayedImageWidth = Math.round(width * (displayedImageHeight / height))
   if (displayedImageWidth > dialogWidth - 20) {
     displayedImageWidth = dialogWidth - 20
-    displayedImageHeight = height * (displayedImageWidth / width)
+    displayedImageHeight = Math.round(height * (displayedImageWidth / width))
   }
 
   const randomId = foundry.utils.randomID(4)
-  const form = `
-<form><div class="form-group-stacked">
+  const contentDiv = document.createElement('div')
+  contentDiv.innerHTML = `
+<div class="form-group-stacked">
     <div style="display: flex; flex-direction: column; align-items: center;">
         <img src="${blobUrl}" alt="generated image" style="height: ${displayedImageHeight}px; width: ${displayedImageWidth}px"/>
     </div>
@@ -73,21 +75,26 @@ const openConvertDrawingsDialog = async () => {
       <label>Image filename</label>
       <input type="text" name="filename" value="MyFoundryDrawing_${randomId}" required/>
     </div>
-</div></form>
+</div>
 `
 
-  new Dialog({
-    title: 'Convert drawing to image',
-    content: form,
-    options: {
-      height: 'auto',
+  return foundry.applications.api.DialogV2.wait({
+    window: {
+      title: 'Convert drawing to image',
+      icon: 'fa-solid fa-image',
     },
-    buttons: {
-      download: {
-        icon: '<i class="fas fa-download"></i>',
+    position: {
+      width: dialogWidth,
+      height: formHeight + displayedImageHeight,
+    },
+    content: contentDiv,
+    buttons: [
+      {
+        action: 'download',
+        icon: 'fa-solid fa-download',
         label: 'Download image',
-        callback: async html => {
-          const filename = html.find('input')[0].value.trim()
+        callback: async (_event, _button, dialog) => {
+          const filename = $(dialog).find('input')[0].value.trim()
           if (filename.length === 0) {
             URL.revokeObjectURL(blobUrl)
             return ui.notifications.error('No file name entered.')
@@ -103,23 +110,25 @@ const openConvertDrawingsDialog = async () => {
           URL.revokeObjectURL(blobUrl)
         },
       },
-      uploadAndKeep: {
-        icon: '<i class="fas fa-eye-slash"></i>',
+      {
+        action: 'uploadAndKeep',
+        icon: 'fa-solid fa-eye-slash',
         label: 'Hide drawings + replace with tile',
-        callback: async html => {
+        callback: async (_event, _button, dialog) => {
           URL.revokeObjectURL(blobUrl)
-          const filename = html.find('input')[0].value.trim()
+          const filename = $(dialog).find('input')[0].value.trim()
           if (filename.length === 0) {
             return ui.notifications.error('No file name entered.')
           }
           const fullFilename = filename + '.webp'
 
-          SceneNavigation.displayProgressBar({ label: 'Uploading tile image...', pct: 10 })
+          startProgressBar({ label: 'Uploading tile image...' })
+          updateProgressBar({ label: 'Uploading tile image...', pctFraction: 0.1 })
           const uploadResult = await uploadBlobToFoundry(blob, fullFilename)
           const uploadedPath = uploadResult.path
-          SceneNavigation.displayProgressBar({ label: 'Creating tile...', pct: 20 })
+          updateProgressBar({ label: 'Creating tile...', pctFraction: 0.2 })
           await createTileFromImage(uploadedPath, left, top, width, height)
-          SceneNavigation.displayProgressBar({ label: 'Hiding drawings (this may take a while)...', pct: 30 })
+          updateProgressBar({ label: 'Hiding drawings (this may take a while)...', pctFraction: 0.3 })
           const updates = selectedDrawings.map(drawing => {
             return {
               _id: drawing.id,
@@ -127,14 +136,11 @@ const openConvertDrawingsDialog = async () => {
             }
           })
           await canvas.scene.updateEmbeddedDocuments('Drawing', updates)
-          SceneNavigation.displayProgressBar({ label: 'Done hiding drawings!', pct: 100 })
+          stopProgressBar({ label: 'Done hiding drawings!' })
         },
       },
-    },
-  }, {
-    width: dialogWidth,
-    height: formHeight + displayedImageHeight,
-  }).render(true)
+    ],
+  })
 }
 
 /**
@@ -142,15 +148,11 @@ const openConvertDrawingsDialog = async () => {
  */
 export const addConvertDrawingsButton = (controls) => {
   if (!getSetting('enable-convert-drawings-button')) return
-  for (let i = 0; i < controls.length; i++) {
-    if (controls[i].name === 'drawings') {
-      controls[i].tools.push({
-        name: 'precise-drawing-tools_convert-to-tile',
-        title: 'Convert Drawings to Tile',
-        icon: 'fas fa-image',
-        onClick: openConvertDrawingsDialog,
-        button: true,
-      })
-    }
+  controls.drawings.tools.preciseDrawingTools_convertToTile = {
+    name: 'preciseDrawingTools_convertToTile',
+    title: 'Convert Drawings to Tile',
+    icon: 'fa-solid fa-image',
+    onChange: openConvertDrawingsDialog,
+    button: true,
   }
 }

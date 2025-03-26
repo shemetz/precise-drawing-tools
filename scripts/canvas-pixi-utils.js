@@ -1,3 +1,5 @@
+import { startProgressBar, stopProgressBar, updateProgressBar } from './progress-bar.js'
+
 export function readPixel (target, x = 0, y = 0) {
   return canvas.app.renderer.extract.pixels(target, new PIXI.Rectangle(x, y, 1, 1))
 }
@@ -49,7 +51,7 @@ export const convertDrawingsToImage = async (drawings, quality) => {
   const height = bottom - top
 
   const container = new PIXI.Container({ width, height })
-  SceneNavigation.displayProgressBar({ label: 'Preparing drawings...', pct: 1 })
+  startProgressBar({ label: 'Preparing drawings...' })
   const workaroundUpdates = []
   const workaroundReverseUpdates = []
   if (WORKAROUND) {
@@ -76,17 +78,17 @@ export const convertDrawingsToImage = async (drawings, quality) => {
           fillColor,
           textColor,
         })
-        SceneNavigation.displayProgressBar({ label: 'Workaround...', pct: Math.round(1 + 20 * (i / drawings.length)) })
+        updateProgressBar({ label: 'Workaround...', percent: 0.20 * (i / drawings.length) })
       }
     }
     if (workaroundUpdates.length > 0) {
-      SceneNavigation.displayProgressBar({ label: 'Workaround...', pct: 25 })
+      updateProgressBar({ label: 'Workaround...', percent: 0.25 })
       await canvas.scene.updateEmbeddedDocuments('Drawing', workaroundUpdates)
       // sleep and rerender for 1 frame
       await new Promise(resolve => setTimeout(resolve, 10))
     }
   }
-  SceneNavigation.displayProgressBar({ label: 'Collecting drawings...', pct: 30 })
+  updateProgressBar({ label: 'Collecting drawings...', percent: 0.30 })
 
   // Copy all drawings into a PIXI Container
   for (let i = 0; i < drawings.length; i++) {
@@ -108,29 +110,29 @@ export const convertDrawingsToImage = async (drawings, quality) => {
       // Add the shape to the container
       container.addChild(textShape)
     }
-    SceneNavigation.displayProgressBar(
-      { label: 'Collecting drawings...', pct: Math.round(30 + 10 * (i / drawings.length)) })
+    updateProgressBar(
+      { label: 'Collecting drawings...', percent: 0.30 + 0.1 * (i / drawings.length) })
   }
-  SceneNavigation.displayProgressBar({ label: 'Rendering image...', pct: 40 })
+  updateProgressBar({ label: 'Rendering image...', percent: 0.40 })
   const approxTimeToRender = 1 * drawings.length // very approximately 1ms per drawing... 10 seconds for 10k drawings
   let timeSoFar = 0
   const interval = setInterval(() => {
     timeSoFar += 200
     const pctDoneOfRender = Math.min(100, timeSoFar / approxTimeToRender)
-    SceneNavigation.displayProgressBar(
-      { label: 'Rendering image...', pct: 40 + Math.round(pctDoneOfRender * 49) })
+    updateProgressBar(
+      { label: 'Rendering image...', percent: 0.40 + 0.5 * pctDoneOfRender })
   }, 200)
   const blob = await getContainerBlob(container, quality)
   clearInterval(interval)
-  SceneNavigation.displayProgressBar({ label: 'Cleaning up...', pct: 90 })
+  updateProgressBar({ label: 'Cleaning up...', percent: 0.90 })
 
   // Clean up
   container.destroy({ children: true })
   if (workaroundReverseUpdates.length > 0) {
-    SceneNavigation.displayProgressBar({ label: 'Cleaning up...', pct: 95 })
+    updateProgressBar({ label: 'Cleaning up...', percent: 0.95 })
     await canvas.scene.updateEmbeddedDocuments('Drawing', workaroundReverseUpdates)
   }
-  SceneNavigation.displayProgressBar({ label: 'Done preparing image.', pct: 100 }) //ends loading
+  stopProgressBar({ label: 'Done preparing image.' }) //ends loading
 
   return {
     blob,
