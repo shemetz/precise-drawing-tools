@@ -1,3 +1,7 @@
+## 1.6.1 - 2025-08-21
+- Fixed Convert Drawings to Tile
+- Added room for translations
+
 ## 1.6.0 - 2025-03-26
 - Fixed Foundry V13 compatibility
 
