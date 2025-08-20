@@ -94,7 +94,7 @@ const openConvertDrawingsDialog = async () => {
         icon: 'fa-solid fa-download',
         label: 'Download image',
         callback: async (_event, _button, dialog) => {
-          const filename = $(dialog).find('input')[0].value.trim()
+          const filename = $(dialog.element).find('input')[0].value.trim()
           if (filename.length === 0) {
             URL.revokeObjectURL(blobUrl)
             return ui.notifications.error('No file name entered.')
@@ -116,7 +116,7 @@ const openConvertDrawingsDialog = async () => {
         label: 'Hide drawings + replace with tile',
         callback: async (_event, _button, dialog) => {
           URL.revokeObjectURL(blobUrl)
-          const filename = $(dialog).find('input')[0].value.trim()
+          const filename = $(dialog.element).find('input')[0].value.trim()
           if (filename.length === 0) {
             return ui.notifications.error('No file name entered.')
           }
