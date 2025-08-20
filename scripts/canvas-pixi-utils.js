@@ -1,5 +1,7 @@
 import { startProgressBar, stopProgressBar, updateProgressBar } from './progress-bar.js'
 
+const localize = (key) => game.i18n.localize(`precise-drawing-tools.${key}`)
+
 export function readPixel (target, x = 0, y = 0) {
   return canvas.app.renderer.extract.pixels(target, new PIXI.Rectangle(x, y, 1, 1))
 }
@@ -51,7 +53,7 @@ export const convertDrawingsToImage = async (drawings, quality) => {
   const height = bottom - top
 
   const container = new PIXI.Container({ width, height })
-  startProgressBar({ label: 'Preparing drawings...' })
+  startProgressBar({ label: localize('drawing-to-image.progress-preparing') })
   const workaroundUpdates = []
   const workaroundReverseUpdates = []
   if (WORKAROUND) {
@@ -78,17 +80,17 @@ export const convertDrawingsToImage = async (drawings, quality) => {
           fillColor,
           textColor,
         })
-        updateProgressBar({ label: 'Workaround...', percent: 0.20 * (i / drawings.length) })
+        updateProgressBar({ label: localize('drawing-to-image.progress-workaround'), percent: 0.20 * (i / drawings.length) })
       }
     }
     if (workaroundUpdates.length > 0) {
-      updateProgressBar({ label: 'Workaround...', percent: 0.25 })
+      updateProgressBar({ label: localize('drawing-to-image.progress-workaround'), percent: 0.25 })
       await canvas.scene.updateEmbeddedDocuments('Drawing', workaroundUpdates)
       // sleep and rerender for 1 frame
       await new Promise(resolve => setTimeout(resolve, 10))
     }
   }
-  updateProgressBar({ label: 'Collecting drawings...', percent: 0.30 })
+  updateProgressBar({ label: localize('drawing-to-image.progress-collecting'), percent: 0.30 })
 
   // Copy all drawings into a PIXI Container
   for (let i = 0; i < drawings.length; i++) {
@@ -111,28 +113,28 @@ export const convertDrawingsToImage = async (drawings, quality) => {
       container.addChild(textShape)
     }
     updateProgressBar(
-      { label: 'Collecting drawings...', percent: 0.30 + 0.1 * (i / drawings.length) })
+      { label: localize('drawing-to-image.progress-collecting'), percent: 0.30 + 0.1 * (i / drawings.length) })
   }
-  updateProgressBar({ label: 'Rendering image...', percent: 0.40 })
+  updateProgressBar({ label: localize('drawing-to-image.progress-rendering'), percent: 0.40 })
   const approxTimeToRender = 1 * drawings.length // very approximately 1ms per drawing... 10 seconds for 10k drawings
   let timeSoFar = 0
   const interval = setInterval(() => {
     timeSoFar += 200
     const pctDoneOfRender = Math.min(100, timeSoFar / approxTimeToRender)
     updateProgressBar(
-      { label: 'Rendering image...', percent: 0.40 + 0.5 * pctDoneOfRender })
+      { label: localize('drawing-to-image.progress-rendering'), percent: 0.40 + 0.5 * pctDoneOfRender })
   }, 200)
   const blob = await getContainerBlob(container, quality)
   clearInterval(interval)
-  updateProgressBar({ label: 'Cleaning up...', percent: 0.90 })
+  updateProgressBar({ label: localize('drawing-to-image.progress-cleaning-up'), percent: 0.90 })
 
   // Clean up
   container.destroy({ children: true })
   if (workaroundReverseUpdates.length > 0) {
-    updateProgressBar({ label: 'Cleaning up...', percent: 0.95 })
+    updateProgressBar({ label: localize('drawing-to-image.progress-cleaning-up'), percent: 0.95 })
     await canvas.scene.updateEmbeddedDocuments('Drawing', workaroundReverseUpdates)
   }
-  stopProgressBar({ label: 'Done preparing image.' }) //ends loading
+  stopProgressBar({ label: localize('drawing-to-image.progress-done-preparing') }) //ends loading
 
   return {
     blob,

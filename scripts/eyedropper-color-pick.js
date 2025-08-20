@@ -2,6 +2,8 @@ import { getScreenMousePosition } from './mouse-utils.js'
 import { readPixel, rgbaToHex } from './canvas-pixi-utils.js'
 import { getSetting, MODULE_ID } from './precise-drawing-tools.js'
 
+const localize = (key) => game.i18n.localize(`precise-drawing-tools.${key}`)
+
 export const colorPickFromCursor = async (fillOrStroke) => {
   const { color, alpha } = getMousePixelColorAndAlpha()
   await updateDrawingDefaults(
@@ -146,9 +148,8 @@ function undoTemporaryUiChanges () {
 export const hookEyedropperColorPicker = () => {
   const { SHIFT } = foundry.helpers.interaction.KeyboardManager.MODIFIER_KEYS
   game.keybindings.register(MODULE_ID, 'eyedropper', {
-    name: 'Eyedropper (Color Pick)',
-    hint: 'Pick the color of the current pixel under the cursor, and set it as current stroke color.' +
-      ' Hold Shift to change the fill color instead.',
+    name: localize('eyedropper.keybinding-name'),
+    hint: localize('eyedropper.keybinding-hint'),
     editable: [
       {
         key: 'KeyK',

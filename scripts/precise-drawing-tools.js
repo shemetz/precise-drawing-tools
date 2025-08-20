@@ -7,6 +7,8 @@ export function getSetting (settingName) {
   return game.settings.get(MODULE_ID, settingName)
 }
 
+const localize = (key) => game.i18n.localize(`precise-drawing-tools.${key}`)
+
 const isActivelyDrawingWithFreehand = () => ui.controls.tool.name === 'freehand'
 
 const updateActiveToolLimits = () => {
@@ -117,8 +119,8 @@ function handleMouseMove (mouseMoveEvent) {
 
 Hooks.once('init', function () {
   game.settings.register(MODULE_ID, 'disable-drag-resistance-while-drawing', {
-    name: `Disable drag resistance while drawing`,
-    hint: `Allows making short strokes - otherwise, the minimum size of each drawing is 1/4th of a square (usually 25px)`,
+    name: localize('settings.disable-drag-resistance.name'),
+    hint: localize('settings.disable-drag-resistance.hint'),
     scope: 'client',
     config: true,
     type: Boolean,
@@ -126,8 +128,8 @@ Hooks.once('init', function () {
     onChange: updateActiveToolLimits,
   })
   game.settings.register(MODULE_ID, 'enable-dynamic-sampling-rate-while-drawing', {
-    name: `Enable dynamic sampling rate (DSR) while drawing`,
-    hint: `Normally, Foundry imposes a sampling rate of 75ms for polygon lines and ~17ms for any mouse drag event.  This setting will dynamically pick a sampling rate of 4-75 depending on how slow you draw with the freehand tool.`,
+    name: localize('settings.enable-dsr.name'),
+    hint: localize('settings.enable-dsr.hint'),
     scope: 'client',
     config: true,
     type: Boolean,
@@ -135,8 +137,8 @@ Hooks.once('init', function () {
     onChange: updateActiveToolLimits,
   })
   game.settings.register(MODULE_ID, 'target-sampling-distance', {
-    name: `Target sampling distance (if DSR is enabled)`,
-    hint: `Defaults to 50, which means it aims to place about two polygon points per 50 screen pixels.  Lower numbers give higher frequency of points`,
+    name: localize('settings.target-sampling-distance.name'),
+    hint: localize('settings.target-sampling-distance.hint'),
     scope: 'client',
     config: true,
     type: Number,
@@ -144,16 +146,16 @@ Hooks.once('init', function () {
     onChange: updateActiveToolLimits,
   })
   game.settings.register(MODULE_ID, 'enable-eyedropper-color-picker', {
-    name: `Enable "eyedropper"/"color picker" hotkey`,
-    hint: `Pick the color of the current pixel under the cursor, and set it as current stroke color. Hold Shift to change the fill color instead. (default hotkey is K, see Configure Controls)`,
+    name: localize('settings.enable-eyedropper.name'),
+    hint: localize('settings.enable-eyedropper.hint'),
     scope: 'client',
     config: true,
     type: Boolean,
     default: true,
   })
   game.settings.register(MODULE_ID, 'enable-convert-drawings-button', {
-    name: `Enable "Convert Drawings" button`,
-    hint: `This new button in the Drawings controls allows you to convert selected drawings to a single image file and optionally create a tile with that image in the same location.  The image will be saved to the worlds/[your-world-id]/PDT-converted-drawings directory.`,
+    name: localize('settings.enable-convert-drawings.name'),
+    hint: localize('settings.enable-convert-drawings.hint'),
     scope: 'client',
     config: true,
     type: Boolean,

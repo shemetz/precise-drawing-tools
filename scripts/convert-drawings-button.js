@@ -4,6 +4,8 @@ import { convertDrawingsToImage } from './canvas-pixi-utils.js'
 import { getSetting } from './precise-drawing-tools.js'
 import { startProgressBar, stopProgressBar, updateProgressBar } from './progress-bar.js'
 
+const localize = (key) => game.i18n.localize(`precise-drawing-tools.${key}`)
+
 const getWorldPath = () => {
   return 'worlds/' + game.world.id
 }
@@ -50,7 +52,7 @@ const createUploadDirectory = async () => {
  */
 const openConvertDrawingsDialog = async () => {
   const selectedDrawings = canvas.drawings?.controlled ?? []
-  if (selectedDrawings.length <= 0) return ui.notifications.error('No drawings are selected!')
+  if (selectedDrawings.length <= 0) return ui.notifications.error(localize('drawing-to-image.dialog-error-no-drawings-selected'))
   const quality = 0.92 // I decided not to let the user select the quality, usually it's irrelevant
   const { blob, left, top, width, height } = await convertDrawingsToImage(selectedDrawings, quality)
   const blobUrl = URL.createObjectURL(blob)
@@ -72,15 +74,15 @@ const openConvertDrawingsDialog = async () => {
         <img src="${blobUrl}" alt="generated image" style="height: ${displayedImageHeight}px; width: ${displayedImageWidth}px"/>
     </div>
     <div class="form-group">
-      <label>Image filename</label>
-      <input type="text" name="filename" value="MyFoundryDrawing_${randomId}" required/>
+      <label>${localize('drawing-to-image.dialog-input-filename-label')}</label>
+      <input type="text" name="filename" value="${localize('drawing-to-image.default-filename-prefix')}${randomId}" required/>
     </div>
 </div>
 `
 
   return foundry.applications.api.DialogV2.wait({
     window: {
-      title: 'Convert drawing to image',
+      title: localize('drawing-to-image.dialog-title'),
       icon: 'fa-solid fa-image',
     },
     position: {
@@ -92,12 +94,12 @@ const openConvertDrawingsDialog = async () => {
       {
         action: 'download',
         icon: 'fa-solid fa-download',
-        label: 'Download image',
+        label: localize('drawing-to-image.dialog-button-download-label'),
         callback: async (_event, _button, dialog) => {
           const filename = $(dialog.element).find('input')[0].value.trim()
           if (filename.length === 0) {
             URL.revokeObjectURL(blobUrl)
-            return ui.notifications.error('No file name entered.')
+            return ui.notifications.error(localize('drawing-to-image.dialog-error-no-file-name'))
           }
           const fullFilename = filename + '.webp'
 
@@ -113,22 +115,22 @@ const openConvertDrawingsDialog = async () => {
       {
         action: 'uploadAndKeep',
         icon: 'fa-solid fa-eye-slash',
-        label: 'Hide drawings + replace with tile',
+        label: localize('drawing-to-image.dialog-button-uploadAndKeep-label'),
         callback: async (_event, _button, dialog) => {
           URL.revokeObjectURL(blobUrl)
           const filename = $(dialog.element).find('input')[0].value.trim()
           if (filename.length === 0) {
-            return ui.notifications.error('No file name entered.')
+            return ui.notifications.error(localize('drawing-to-image.dialog-error-no-file-name'))
           }
           const fullFilename = filename + '.webp'
 
-          startProgressBar({ label: 'Uploading tile image...' })
-          updateProgressBar({ label: 'Uploading tile image...', pctFraction: 0.1 })
+          startProgressBar({ label: localize('drawing-to-image.progress-uploading') })
+          updateProgressBar({ label: localize('drawing-to-image.progress-uploading'), pctFraction: 0.1 })
           const uploadResult = await uploadBlobToFoundry(blob, fullFilename)
           const uploadedPath = uploadResult.path
-          updateProgressBar({ label: 'Creating tile...', pctFraction: 0.2 })
+          updateProgressBar({ label: localize('drawing-to-image.progress-creating-tile'), pctFraction: 0.2 })
           await createTileFromImage(uploadedPath, left, top, width, height)
-          updateProgressBar({ label: 'Hiding drawings (this may take a while)...', pctFraction: 0.3 })
+          updateProgressBar({ label: localize('drawing-to-image.progress-hiding-drawings'), pctFraction: 0.3 })
           const updates = selectedDrawings.map(drawing => {
             return {
               _id: drawing.id,
@@ -136,7 +138,7 @@ const openConvertDrawingsDialog = async () => {
             }
           })
           await canvas.scene.updateEmbeddedDocuments('Drawing', updates)
-          stopProgressBar({ label: 'Done hiding drawings!' })
+          stopProgressBar({ label: localize('drawing-to-image.progress-done-hiding-drawings') })
         },
       },
     ],
@@ -150,7 +152,7 @@ export const addConvertDrawingsButton = (controls) => {
   if (!getSetting('enable-convert-drawings-button')) return
   controls.drawings.tools.preciseDrawingTools_convertToTile = {
     name: 'preciseDrawingTools_convertToTile',
-    title: 'Convert Drawings to Tile',
+    title: localize('drawing-to-image.toolbar-title'),
     icon: 'fa-solid fa-image',
     onChange: openConvertDrawingsDialog,
     button: true,

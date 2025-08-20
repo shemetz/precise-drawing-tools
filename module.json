@@ -10,6 +10,13 @@
   "esmodules": [
     "scripts/precise-drawing-tools.js"
   ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
   "url": "https://github.com/shemetz/precise-drawing-tools",
   "manifest": "https://github.com/shemetz/precise-drawing-tools/raw/master/module.json",
   "download": "https://github.com/shemetz/precise-drawing-tools/archive/master.zip",
