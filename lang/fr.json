@@ -1,0 +1,53 @@
+{
+  "precise-drawing-tools": {
+    "drawing-to-image": {
+      "dialog-title": "Convertir un dessin en image",
+      "dialog-input-filename-label": "Nom du fichier image",
+      "default-filename-prefix": "MonDessinFoundry",
+      "dialog-button-download-label": "Télécharger l'image",
+      "dialog-button-uploadAndKeep-label": "Cacher les dessins + remplacer par une tuile",
+      "dialog-error-no-file-name": "Aucun nom de fichier n'a été saisi.",
+      "dialog-error-no-drawings-selected": "Aucun dessin n'est sélectionné !",
+      "progress-uploading": "Téléchargement de l'image de la tuile...",
+      "progress-creating-tile": "Création de tuile...",
+      "progress-hiding-drawings": "Cacher les dessins (cela peut prendre un certain temps)...",
+      "progress-done-hiding-drawings": "Cacher les dessins terminé !",
+      "progress-preparing": "Préparation des dessins...",
+      "progress-workaround": "Solution de contournement...",
+      "progress-collecting": "Récupération des dessins...",
+      "progress-rendering": "Rendu d'image...",
+      "progress-cleaning-up": "Nettoyage...",
+      "progress-done-preparing": "Préparation de l'image terminée.",
+      "toolbar-title": "Convertir la sélection en image"
+    },
+    "eyedropper": {
+      "keybinding-name": "Pipette (choix de couleur)",
+      "keybinding-hint": "Sélectionnez la couleur du pixel sous le curseur et définissez-la comme couleur de contour actuelle. Maintenez Maj enfoncée pour modifier la couleur de remplissage à la place."
+    },
+    "settings": {
+      "disable-drag-resistance": {
+        "name": "Désactiver la résistance du glissement en dessinant",
+        "hint": "Permet de faire des traits courts - sinon, la taille minimale de chaque dessin est de 1/4 de case (généralement 25 px)"
+      },
+      "enable-dsr": {
+        "name": "Activer la fréquence d'échantillonnage dynamique (DSR/FED) en dessinant",
+        "hint": "Normalement, Foundry impose une fréquence d'échantillonnage de 75 ms pour les lignes polygonales et ~17 ms pour tout déplacement de souris. Ce paramètre sélectionne dynamiquement une fréquence d'échantillonnage de 4-75 ms, selon la vitesse à laquelle vous dessinez avec l'outil à main levée."
+      },
+      "target-sampling-distance": {
+        "name": "Distance d'échantillonnage cible (si DSR/FED est activé)",
+        "hint": "Valeur par défaut de 50, ce qui signifie que l'objectif est de placer environ deux points de polygone pour 50 pixels sur l'écran. Réduire la valeur donne une fréquence de points supérieure."
+      },
+      "enable-eyedropper": {
+        "name": "Activer le raccourci clavier « Pipette »/« Sélecteur de couleurs »",
+        "hint": "Sélectionnez la couleur du pixel sous le curseur et définissez-la comme couleur de contour. Maintenez Maj enfoncée pour modifier la couleur de remplissage à la place. (Touche K par défaut ; voir Configuration des touches)."
+      },
+      "enable-convert-drawings": {
+        "name": "Activer le bouton « Convertir les dessins »",
+        "hint": "Ce nouveau bouton dans les commandes de Dessin vous permet de convertir les dessins sélectionnés en un seul fichier image et, éventuellement, de créer une tuile avec cette image au même emplacement. L'image sera enregistrée dans le répertoire worlds/[lid-du-monde]/PDT-converted-drawings."
+      }
+    },
+    "notifications": {
+      "progress-bar-not-found": "Barre de progression introuvable, quelque chose ne va pas avec preciseDrawingTools !"
+    }
+  }
+}
