@@ -117,6 +117,19 @@ function handleMouseMove (mouseMoveEvent) {
   }
 }
 
+function wrap_validateJoint(originalFunction, data) {
+  const { width, height } = data?.shape ?? {}
+  if (width === 0 && height === 0) {
+    // at this point, foundry code will scream that we have an invalid shape, even though it'll be fine in a few
+    // milliseconds when the user continues the drawing
+    if (isActivelyDrawingWithFreehand()) {
+      // skip such errors
+      return undefined
+    }
+  }
+  return originalFunction(data)
+}
+
 Hooks.once('init', function () {
   game.settings.register(MODULE_ID, 'disable-drag-resistance-while-drawing', {
     name: localize('settings.disable-drag-resistance.name'),
@@ -165,6 +178,7 @@ Hooks.once('init', function () {
 
 Hooks.once('setup', function () {
   hookEyedropperColorPicker()
+  libWrapper.register(MODULE_ID, 'foundry.documents.DrawingDocument.validateJoint', wrap_validateJoint, 'MIXED')
   console.log('Done setting up Precise Drawing Tools.')
 })
 
