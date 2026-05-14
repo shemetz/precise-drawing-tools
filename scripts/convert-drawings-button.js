@@ -24,8 +24,8 @@ const uploadBlobToFoundry = async (blob, filename) => {
 
 const createTileFromImage = async (uploadedPath, left, top, width, height) => {
   const tileData = {
-    x: left,
-    y: top,
+    x: left + width / 2,
+    y: top + height / 2,
     width,
     height,
     texture: { src: uploadedPath },
